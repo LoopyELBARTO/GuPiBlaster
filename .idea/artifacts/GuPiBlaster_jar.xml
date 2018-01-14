@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="GuPiBlaster:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/GuPiBlaster_jar</output-path>
+    <root id="archive" name="GuPiBlaster.jar">
+      <element id="module-output" name="GuPiBlaster" />
+      <element id="extracted-dir" path="/opt/pi4j/lib/pi4j-core.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/opt/pi4j/lib/pi4j-device.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/opt/pi4j/lib/pi4j-gpio-extension.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
