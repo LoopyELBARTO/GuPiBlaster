@@ -17,34 +17,45 @@ import java.io.IOException;
 import java.sql.Driver;
 import java.text.DecimalFormat;
 
-public class ADSReadVoltage {
+public class ADSReadVoltageCurrent {
+    private static final double BASE_LINE = 0.5;
+    private static final double OUTPUT_SENSITIVITY = 0.1333;
+
     private double value;
     private double percent;
-    protected double rawVoltage;
 
+    //VOLTAGE
+    protected double rawVoltage;
     protected double actualVoltage;
     private final double multiplier = 4;
 
-    public GpioPinListener voltageListener;
+    //CURRENT
+    private double actualCurrent;
+
+    public GpioPinListener voltageANDCurrentListener;
 
     public final DecimalFormat DF = new DecimalFormat("#.##");
 
     public final GpioController GPIO = GpioFactory.getInstance();
 
     private final DifferentialGpioProvider DIFFERENTIAL_PROVIDER = new DifferentialGpioProvider(I2CBus.BUS_1, ADS1015GpioProvider.ADS1015_ADDRESS_0x48);
+
     public final GpioPinAnalog DIFF_ANALOG_INPUTS[] = {
             GPIO.provisionAnalogInputPin(DIFFERENTIAL_PROVIDER, ADS1015DifferentialPins.INPUT_A0_A1, "A0-A1")
     };
 
 
-    public ADSReadVoltage() throws IOException, I2CFactory.UnsupportedBusNumberException {
+    public ADSReadVoltageCurrent() throws IOException, I2CFactory.UnsupportedBusNumberException {
+
+    }
+    public ADSReadVoltageCurrent(GpioPinAnalog gpioPinAnalog) throws IOException, I2CFactory.UnsupportedBusNumberException {
 
 
     }
-    public void Start(){
+    public void start(){
         setupGpio();
         analogPinValueListener();
-        DIFF_ANALOG_INPUTS[0].addListener(voltageListener);
+        DIFF_ANALOG_INPUTS[0].addListener(voltageANDCurrentListener);
     }
 
     public void setupGpio() {
@@ -57,11 +68,12 @@ public class ADSReadVoltage {
     }
 
     public void analogPinValueListener() {
-        voltageListener = new GpioPinListenerAnalog() {
+        voltageANDCurrentListener = new GpioPinListenerAnalog() {
             @Override
             public void handleGpioPinAnalogValueChangeEvent(GpioPinAnalogValueChangeEvent event) {
                 setListenerValue(event);
                 System.out.println("Volt: " + DF.format(getActualVoltage()));
+                System.out.println("Amp: " + DF.format(getActualCurrent()));
             }
         };
     }
@@ -70,11 +82,16 @@ public class ADSReadVoltage {
         value = gpioEvent.getValue();
         percent = ((value * 100) / ADS1015GpioProvider.ADS1015_RANGE_MAX_VALUE);
         rawVoltage = DIFFERENTIAL_PROVIDER.getProgrammableGainAmplifier(gpioEvent.getPin()).getVoltage() * (percent/100);
+        actualCurrent = (rawVoltage - BASE_LINE) / OUTPUT_SENSITIVITY;
         actualVoltage = rawVoltage * multiplier;
     }
 
     public double getActualVoltage() {
         return actualVoltage;
+    }
+
+    public double getActualCurrent() {
+        return actualCurrent;
     }
 
     public void shutdown(){
