@@ -1,59 +1,45 @@
 package UI;
 
-import ADS.ADSReadCurrent;
-import ADS.ADSReadVoltage;
+import ServoBlaster.ServoBlaster;
 import com.pi4j.io.i2c.I2CFactory;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.Stack;
+import java.util.Hashtable;
 
 public class PiBlasterUI extends JFrame {
     public JPanel mainPanel;
     private JPanel dataPanel;
     private JPanel servoBlasterPanel;
-    private JPanel menuBarPanel;
-    private JTabbedPane tabbedPane;
-    private JPanel setupTab;
-    public JLabel setForce;
     public JLabel setCurrent;
     public JLabel setVolt;
     private JSlider servoSlider;
-    private JButton openServoBlasterDirectory;
-    private JRadioButton startDataReadingRadioButton;
-    private JRadioButton endRadioButton;
 
-    private ADSReadVoltage readVoltage = new ADSReadVoltage();
-    private ADSReadVoltage voltA = readVoltage;
-    private ADSReadCurrent readCurrent;
+    private Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+
 
     public PiBlasterUI() throws HeadlessException, IOException, I2CFactory.UnsupportedBusNumberException {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setTitle("GuPiBlaster");
-        this.setSize(500, 500);
+        this.setBounds(0,0, screenSize.width, screenSize.height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-
-        startDataReadingRadioButton.addActionListener(new ActionListener() {
+        servoSlider.addChangeListener(new ChangeListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("starting readings from ADS");
-                voltA = readVoltage;
-                voltA.Start();
-            }
-        });
-        endRadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("end readings from ADS");
-                readVoltage.GPIO.shutdown();
-                voltA = null;
-                System.gc();
+            public void stateChanged(ChangeEvent e) {
+                ServoBlaster servoBlaster = new ServoBlaster();
+                try {
+                    servoBlaster.setPWMSignal(servoSlider);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
     }
-
 }
