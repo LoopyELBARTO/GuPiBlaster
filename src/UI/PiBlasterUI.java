@@ -19,6 +19,9 @@ public class PiBlasterUI extends JFrame {
     public JLabel setCurrent;
     public JLabel setVolt;
     private JSlider servoSlider;
+    public JLabel setForce;
+    private JLabel temperatureLabel;
+    public JLabel setTemperature;
 
     private Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 
