@@ -12,6 +12,8 @@ public class Driver{
         PiBlasterUI ui = new PiBlasterUI();
         ADSReader adsReader = new ADSReader();
         Thermocouple readTemp = new Thermocouple();
+
+
         //TODO : uncomment lines of codes for Force when ADS is setup for the memory address 0x49;
 
 

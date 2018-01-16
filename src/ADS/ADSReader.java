@@ -1,6 +1,5 @@
 package ADS;
 
-import UI.PiBlasterUI;
 import com.pi4j.gpio.extension.ads.ADS1015GpioProvider;
 import com.pi4j.gpio.extension.ads.ADS1015Pin;
 import com.pi4j.gpio.extension.ads.ADS1x15GpioProvider;
@@ -14,7 +13,6 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CFactory;
 
 import java.io.IOException;
-import java.sql.Driver;
 import java.text.DecimalFormat;
 
 public class ADSReader {
@@ -44,7 +42,8 @@ public class ADSReader {
     private double actualForce;
 
     public GpioPinListener voltageANDCurrentListener;
-    public GpioPinListener forceListener;
+    //public GpioPinListener forceListener;
+
 
     public final DecimalFormat DF = new DecimalFormat("#.##");
 

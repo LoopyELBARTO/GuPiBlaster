@@ -29,6 +29,7 @@ public class PiBlasterUI extends JFrame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setTitle("GuPiBlaster");
         this.setBounds(0,0, screenSize.width, screenSize.height);
+        this.setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
