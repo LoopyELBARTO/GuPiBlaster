@@ -23,7 +23,7 @@ public class Driver{
         while (true){
             ui.setVolt.setText(adsReader.DF.format(adsReader.getActualVoltage()) + " V");
             ui.setCurrent.setText(adsReader.DF.format(adsReader.getActualCurrent()) + " A");
-            //ui.setForce.setText(adsReader.DF.format(adsReader.getActualForce()));
+            ui.setForce.setText(adsReader.DF.format(adsReader.getActualForce()) + " N");
             readTemp.start();
             ui.setTemperature.setText(readTemp.DF.format(readTemp.getThermocoupleTemp()) + " C");
         }

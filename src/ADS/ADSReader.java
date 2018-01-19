@@ -42,7 +42,7 @@ public class ADSReader {
     private double actualForce;
 
     public GpioPinListener voltageANDCurrentListener;
-    //public GpioPinListener forceListener;
+    public GpioPinListener forceListener;
 
 
     public final DecimalFormat DF = new DecimalFormat("#.##");
@@ -53,11 +53,11 @@ public class ADSReader {
     private final DifferentialGpioProvider DIFFERENTIAL_PROVIDER_V_C = new DifferentialGpioProvider(I2CBus.BUS_1, ADS1015GpioProvider.ADS1015_ADDRESS_0x48);
 
     //Force Differential Provider
-    //private final DifferentialGpioProvider DIFFERENTIAL_PROVIDER_F = new DifferentialGpioProvider(I2CBus.BUS_1, ADS1015GpioProvider.ADS1015_ADDRESS_0x49);
+    private final DifferentialGpioProvider DIFFERENTIAL_PROVIDER_F = new DifferentialGpioProvider(I2CBus.BUS_1, ADS1015GpioProvider.ADS1015_ADDRESS_0x49);
 
     public final GpioPinAnalog DIFF_ANALOG_INPUTS[] = {
-            GPIO.provisionAnalogInputPin(DIFFERENTIAL_PROVIDER_V_C, ADS1015DifferentialPins.INPUT_A0_A1, "A0-A1")
-            //GPIO.provisionAnalogInputPin(DIFFERENTIAL_PROVIDER_F, ADS1015DifferentialPins.INPUT_A0_A1, "A0-A1")
+            GPIO.provisionAnalogInputPin(DIFFERENTIAL_PROVIDER_V_C, ADS1015DifferentialPins.INPUT_A0_A1, "A0-A1"),
+            GPIO.provisionAnalogInputPin(DIFFERENTIAL_PROVIDER_F, ADS1015DifferentialPins.INPUT_A0_A1, "A0-A1")
     };
 
 
@@ -72,7 +72,7 @@ public class ADSReader {
         setupGpio();
         analogPinValueListener();
         DIFF_ANALOG_INPUTS[0].addListener(voltageANDCurrentListener);
-        //DIFF_ANALOG_INPUTS[1].addListener(forceListener);
+        DIFF_ANALOG_INPUTS[1].addListener(forceListener);
     }
 
     public void setupGpio() {
@@ -85,10 +85,10 @@ public class ADSReader {
         DIFFERENTIAL_PROVIDER_V_C.setMonitorInterval(MONITOR_INTERVAL);
 
         //FORCE SETUP
-        /*DIFFERENTIAL_PROVIDER_F.setProgrammableGainAmplifier(
+        DIFFERENTIAL_PROVIDER_F.setProgrammableGainAmplifier(
                 ADS1x15GpioProvider.ProgrammableGainAmplifierValue.PGA_4_096V, ADS1015Pin.ALL);
         DIFFERENTIAL_PROVIDER_F.setEventThreshold(EVENT_THRESHOLD, ADS1015Pin.ALL);
-        DIFFERENTIAL_PROVIDER_F.setMonitorInterval(MONITOR_INTERVAL);*/
+        DIFFERENTIAL_PROVIDER_F.setMonitorInterval(MONITOR_INTERVAL);
     }
 
     public void analogPinValueListener() {
@@ -100,13 +100,13 @@ public class ADSReader {
                 System.out.println("Amp: " + DF.format(getActualCurrent()));
             }
         };
-        /*forceListener = new GpioPinListenerAnalog() {
+        forceListener = new GpioPinListenerAnalog() {
             @Override
             public void handleGpioPinAnalogValueChangeEvent(GpioPinAnalogValueChangeEvent gpioPinAnalogValueChangeEvent) {
                 setListenerValue(gpioPinAnalogValueChangeEvent);
                 System.out.println("Newton: " + DF.format(getActualForce()));
             }
-        };*/
+        };
     }
 
     public void setListenerValue(GpioPinAnalogValueChangeEvent gpioEvent) {
@@ -116,7 +116,7 @@ public class ADSReader {
         rawVoltage = DIFFERENTIAL_PROVIDER_V_C.getProgrammableGainAmplifier(gpioEvent.getPin()).getVoltage() * (percent/100);
 
         //ACTUAL VALUES
-        //actualForce = (rawVoltage * OUTPUT_SENSITIVITY_FORCE) + BASE_LINE_FORCE;
+        actualForce = (rawVoltage * OUTPUT_SENSITIVITY_FORCE) + BASE_LINE_FORCE;
         actualCurrent = (rawVoltage - BASE_LINE_CURRENT) / OUTPUT_SENSITIVITY_CURRENT;
         actualVoltage = rawVoltage * multiplier;
     }
@@ -129,9 +129,9 @@ public class ADSReader {
         return actualCurrent;
     }
 
-    /*public double getActualForce() {
+    public double getActualForce() {
         return actualForce;
-    }*/
+    }
 
     public void shutdown(){
         GPIO.isShutdown();
